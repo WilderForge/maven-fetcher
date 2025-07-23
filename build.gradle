@@ -3,9 +3,9 @@
  */
 
 plugins {
-    id 'java-library'
-    id 'maven-publish'
+    id 'java-gradle-plugin'
     id 'eclipse'
+    id 'maven-publish'
 }
 
 repositories {
@@ -40,35 +40,9 @@ version = '1.1.1+WilderForge.1.0.0'
 description = 'Maven Fetcher'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Javadoc) {
-    options.encoding = 'UTF-8'
-}
+apply from: 'replaceTokenScript.gradle'
+apply from: 'publishScript.gradle'
 
 java {
     modularity.inferModulePath = false //fuck java modules
-}
-
-tasks.withType(Javadoc).configureEach {
-    // Silence warnings
-    options.addStringOption('Xdoclint:none', '-quiet')
-
-    // Fail the build on Javadoc errors
-    failOnError = true
 }
