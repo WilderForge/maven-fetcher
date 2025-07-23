@@ -26,6 +26,7 @@ dependencies {
     api 'org.apache.httpcomponents:httpclient:4.5.13'
     api 'com.google.inject:guice:6.0.0'
     api 'org.slf4j:slf4j-api:2.0.6'
+    api 'org.apache.maven:maven-core:3.9.9'
     
     testImplementation 'org.slf4j:slf4j-simple:2.0.16'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
