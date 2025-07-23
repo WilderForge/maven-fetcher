@@ -47,3 +47,15 @@ apply from: 'publishScript.gradle'
 java {
     modularity.inferModulePath = false //fuck java modules
 }
+
+jar {
+    from('LICENSES') {
+        into 'LICENSES'
+    }
+}
+
+tasks.named('sourceJar') {
+    from('LICENSES') {
+        into 'LICENSES'
+    }
+}
