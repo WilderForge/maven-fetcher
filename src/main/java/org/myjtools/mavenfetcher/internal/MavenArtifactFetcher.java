@@ -66,7 +66,7 @@ public class MavenArtifactFetcher implements DependencySelector {
     public MavenFetchResult fetch() throws DependencyCollectionException, ArtifactDescriptorException {
         if (logger.isInfoEnabled()) {
             logger.info("Using the following repositories:");
-            for (var remoteRepository : remoteRepositories) {
+            for (RemoteRepository remoteRepository : remoteRepositories) {
                 if (remoteRepository.getAuthentication() == null) {
                     logger.info("- {} [{}]", remoteRepository.getId(), remoteRepository.getUrl());
                 } else {
@@ -76,7 +76,7 @@ public class MavenArtifactFetcher implements DependencySelector {
         }
         this.retrievedArtifacts = new HashSet<>();
         List<CollectResult> results = new ArrayList<>();
-        for (var artifact : artifacts) {
+        for (Artifact artifact : artifacts) {
             results.add(collectResult(artifact));
         }
         return new MavenFetchResultImpl(results, session);
@@ -112,15 +112,15 @@ public class MavenArtifactFetcher implements DependencySelector {
             return new DefaultArtifact(coordinates);
         } catch (IllegalArgumentException e) {
             // if version is not supplied, try to use the latest
-            var parts = coordinates.split(":");
+            String[] parts = coordinates.split(":");
             if (parts.length == 2) {
                 try {
-                    var groupId = parts[0];
-                    var artifactId = parts[1];
-                    var versionRequest = new VersionRequest()
+                    String groupId = parts[0];
+                    String artifactId = parts[1];
+                    VersionRequest versionRequest = new VersionRequest()
                         .setArtifact(new DefaultArtifact(groupId, artifactId, "jar", "LATEST"))
                         .setRepositories(this.remoteRepositories);                    
-                    var version = system.resolveVersion(session, versionRequest).getVersion();
+                    String version = system.resolveVersion(session, versionRequest).getVersion();
                     return new DefaultArtifact(groupId, artifactId, "jar", version);
                 } catch (VersionResolutionException ex) {
                     throw new IllegalArgumentException("Cannot resolve artifact version: "+ex.getMessage(), ex);
@@ -132,10 +132,10 @@ public class MavenArtifactFetcher implements DependencySelector {
 
 
     private Exclusion exclusionFromCoordinates (String coordinates) {
-        var parts = coordinates.split(":");
+        String[] parts = coordinates.split(":");
         if (parts.length >= 2) {
-            var groupId = parts[0];
-            var artifactId = parts[1];
+            String groupId = parts[0];
+            String artifactId = parts[1];
             return new Exclusion(groupId, artifactId, "jar", null);
         } else {
             throw new IllegalArgumentException("Invalid exclusion '"+coordinates+"'");

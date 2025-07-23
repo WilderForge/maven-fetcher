@@ -661,7 +661,7 @@ public final class ConflictResolver implements DependencyGraphTransformer {
          *
          * @param parentScope The scope of the parent dependency, may be {@code null}.
          * @param childScope The scope of the child dependency, may be {@code null}.
-         * @noreference This class is not intended to be instantiated by clients in production code, the constructor may
+         *  This class is not intended to be instantiated by clients in production code, the constructor may
          *              change without notice and only exists to enable unit testing.
          */
         public ScopeContext(String parentScope, String childScope) {
@@ -767,7 +767,7 @@ public final class ConflictResolver implements DependencyGraphTransformer {
          *            of {@link ConflictItem#OPTIONAL_TRUE} and
          *            {@link ConflictItem#OPTIONAL_FALSE}.
          * @param scopes The derived scopes of the conflicting dependency, must not be {@code null}.
-         * @noreference This class is not intended to be instantiated by clients in production code, the constructor may
+         *  This class is not intended to be instantiated by clients in production code, the constructor may
          *              change without notice and only exists to enable unit testing.
          */
         public ConflictItem(
@@ -906,7 +906,7 @@ public final class ConflictResolver implements DependencyGraphTransformer {
          *            {@code null}.
          * @param conflictIds The mapping from dependency node to conflict id, must not be {@code null}.
          * @param items The conflict items in this context, must not be {@code null}.
-         * @noreference This class is not intended to be instantiated by clients in production code, the constructor may
+         *  This class is not intended to be instantiated by clients in production code, the constructor may
          *              change without notice and only exists to enable unit testing.
          */
         public ConflictContext(

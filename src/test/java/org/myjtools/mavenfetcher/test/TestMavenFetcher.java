@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class TestMavenFetcher {
 
-    private final String mockRepo = Path.of("src", "test", "resources", "mock_maven_repo")
+    private final String mockRepo = Paths.get("src", "test", "resources", "mock_maven_repo")
             .toAbsolutePath()
             .toUri()
             .toString();
@@ -39,7 +41,7 @@ class TestMavenFetcher {
 
     @AfterEach
     public void cleanLocalRepo() throws IOException {
-        Files.walkFileTree(localRepo, new SimpleFileVisitor<>() {
+        Files.walkFileTree(localRepo, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 Files.delete(path);
@@ -52,7 +54,7 @@ class TestMavenFetcher {
     @Test
     @DisplayName("Artifact can be fetched with its dependencies")
     void fetchArtifactWithDependencies() {
-        var result = new MavenFetcher()
+        MavenFetchResult result = new MavenFetcher()
                 .localRepositoryPath(localRepo.toString())
                 .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
                 .fetchArtifacts(
@@ -72,7 +74,7 @@ class TestMavenFetcher {
     @Test
     @DisplayName("Artifact can be fetched excluding certain dependencies")
     void fetchArtifactWithExcludedDependencies() {
-        var result = new MavenFetcher()
+        MavenFetchResult result = new MavenFetcher()
                 .localRepositoryPath(localRepo.toString())
                 .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
                 .fetchArtifacts(
@@ -92,7 +94,7 @@ class TestMavenFetcher {
     @Test
     @DisplayName("Latest artifact version is fetched when version is not specified")
     void fetchLatestVersionIfVersionNotSpecified() {
-        var result = new MavenFetcher()
+        MavenFetchResult result = new MavenFetcher()
                 .localRepositoryPath(localRepo.toString())
                 .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
                 .fetchArtifacts(
@@ -107,7 +109,7 @@ class TestMavenFetcher {
     @Test
     @DisplayName("Artifact version can have a profile (such as 33.1.0-jre)")
     void fetchArtifactWithRequiredProfile() {
-        var result = new MavenFetcher()
+        MavenFetchResult result = new MavenFetcher()
                 .localRepositoryPath(localRepo.toString())
                 .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
                 .fetchArtifacts(
@@ -123,17 +125,17 @@ class TestMavenFetcher {
     void doNotUseDefaultRemoteRepository() {
         Properties withoutDefaultRepo = new Properties();
         withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY, "false");
-        var fetcher1 = new MavenFetcher().config(withoutDefaultRepo);
+        MavenFetcher fetcher1 = new MavenFetcher().config(withoutDefaultRepo);
         assertThat(fetcher1.remoteRepositories()).isEmpty();
 
         Properties withDefaultRepo = new Properties();
         withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY, "true");
-        var fetcher2 = new MavenFetcher().config(withDefaultRepo);
+        MavenFetcher fetcher2 = new MavenFetcher().config(withDefaultRepo);
         assertThat(fetcher2.remoteRepositories()).containsExactly(
                 "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
         );
 
-        var fetcher3 = new MavenFetcher();
+        MavenFetcher fetcher3 = new MavenFetcher();
         assertThat(fetcher3.remoteRepositories()).containsExactly(
                 "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
         );
@@ -169,7 +171,7 @@ class TestMavenFetcher {
     @Test
     @DisplayName("Attempting to fetch a non-existing artifact return a result with errors")
     void attemptToFetchANonExistingArtifact() {
-        var result = new MavenFetcher()
+        MavenFetchResult result = new MavenFetcher()
                 .localRepositoryPath(localRepo.toString())
                 .clearRemoteRepositories()
                 .addRemoteRepository(new Repository("mock", mockRepo).priority(0))
@@ -179,7 +181,7 @@ class TestMavenFetcher {
                 );
         assertThat(result.allArtifacts()).isEmpty();
         assertThat(result.hasErrors()).isTrue();
-        assertThat(result.errors().findAny().map(Exception::getMessage).orElseThrow())
+        assertThat(result.errors().findAny().map(Exception::getMessage).orElseThrow(NoSuchElementException::new))
                 .isEqualTo("Could not fetch artifact b-1.0.jar");
 
     }

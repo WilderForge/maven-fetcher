@@ -10,6 +10,7 @@ import org.eclipse.aether.transfer.TransferListener;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,12 +30,12 @@ public class MavenTransferListener implements TransferListener {
 
 
     public List<String> succededTransfers() {
-        return List.copyOf(succededTransfers);
+        return Collections.unmodifiableList(succededTransfers);
     }
 
 
     public List<String> failedTransfers() {
-        return List.copyOf(failedTransfers);
+        return Collections.unmodifiableList(failedTransfers);
     }
 
 

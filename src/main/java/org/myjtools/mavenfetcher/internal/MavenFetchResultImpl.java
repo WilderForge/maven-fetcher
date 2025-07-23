@@ -32,7 +32,8 @@ public class MavenFetchResultImpl implements MavenFetchResult {
         this.rootArtifacts = results.stream()
                 .map(CollectResult::getRoot)
                 .map(root -> collectArtifact(root, localRepositoryManager, repositoryPath))
-                .flatMap(Optional::stream)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
     }
 
@@ -52,7 +53,8 @@ public class MavenFetchResultImpl implements MavenFetchResult {
         }
         List<FetchedArtifact> dependencies = node.getChildren().stream()
             .map(child -> collectArtifact(child, localRepositoryManager, repositoryPath))
-            .flatMap(Optional::stream)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .collect(Collectors.toList());
 
         return Optional.of(new FetchedArtifact(

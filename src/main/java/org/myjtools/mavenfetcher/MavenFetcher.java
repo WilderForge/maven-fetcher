@@ -6,6 +6,7 @@ package org.myjtools.mavenfetcher;
 
 import org.apache.maven.repository.internal.DefaultVersionResolver;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.collection.DependencyCollectionException;
@@ -41,9 +42,9 @@ import static org.myjtools.mavenfetcher.MavenFetcherProperties.*;
  */
 public class MavenFetcher {
 
-    private final List<RemoteRepository> remoteRepositories = new ArrayList<>(List.of(
-            createRemoteRepository("maven-central", "https://repo.maven.apache.org/maven2")
-    ));
+    private final List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>(Arrays.asList(
+            createRemoteRepository("maven-central", "https://repo.maven.apache.org/maven2"))
+    );
 
     private RepositorySystem system;
     private LocalRepository localRepository;
@@ -73,7 +74,7 @@ public class MavenFetcher {
     private static RemoteRepository parseRemoteRepository(String value) {
         // id=url
         // id=url [user:password]
-        String expression = value.strip().replaceAll("\\s+", " ");
+        String expression = StringUtils.strip(value).replaceAll("\\s+", " ");
         String[] parts = expression.split("=", 2);
         if (parts.length != 2) throwInvalidRepositoryValue(value);
         String id = parts[0];
@@ -99,11 +100,10 @@ public class MavenFetcher {
     }
 
     private static void throwInvalidRepositoryValue(String value) {
-        throw new IllegalArgumentException("""
-                Invalid repository value '%s'
-                Expected formats are 'id=url' and 'id=url [user:pwd]'"""
-                .formatted(value)
-        );
+    	String msg = String.format("" +
+                "Invalid repository value '%s'" +
+                "Expected formats are 'id=url' and 'id=url [user:pwd]'", value);
+        throw new IllegalArgumentException(msg);
     }
 
     private static void checkNonNull(Object... objects) {
@@ -228,7 +228,7 @@ public class MavenFetcher {
         }
         for (Object property : properties.keySet()) {
             try {
-                var value = properties.getProperty(property.toString());
+                String value = properties.getProperty(property.toString());
                 switch (property.toString()) {
                     case REMOTE_REPOSITORIES:
                         addRemoteRepositories(Arrays.asList(value.split(";")));
@@ -333,7 +333,7 @@ public class MavenFetcher {
                     .addPassword(proxyPassword)
                     .build();
         }
-        var proxy = new Proxy(uri.getScheme(), uri.getHost(), port, authentication);
+        Proxy proxy = new Proxy(uri.getScheme(), uri.getHost(), port, authentication);
         return Optional.of(
                 new DefaultProxySelector()
                         .add(proxy, proxyExceptions == null ? "" : String.join("|", proxyExceptions))

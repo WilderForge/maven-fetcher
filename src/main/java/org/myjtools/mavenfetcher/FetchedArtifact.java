@@ -4,6 +4,8 @@
 package org.myjtools.mavenfetcher;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -38,7 +40,7 @@ public class FetchedArtifact {
 
 
     public FetchedArtifact(String coordinates, FetchedArtifact... dependencies) {
-        this(coordinates.split(":")[0],coordinates.split(":")[1],coordinates.split(":")[2],null,List.of(dependencies));
+        this(coordinates.split(":")[0],coordinates.split(":")[1],coordinates.split(":")[2],null, Collections.unmodifiableList(Arrays.asList(dependencies)));
     }
 
     /**

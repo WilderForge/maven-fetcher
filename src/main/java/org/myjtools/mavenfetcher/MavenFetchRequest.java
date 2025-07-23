@@ -4,8 +4,10 @@
 package org.myjtools.mavenfetcher;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -17,7 +19,7 @@ public class MavenFetchRequest {
     private final Collection<String> artifacts;
     private Collection<String> scopes = Arrays.asList("compile", "provided");
     private boolean retrievingOptionals = false;
-    private List<String> excludedArtifacts = List.of();
+    private List<String> excludedArtifacts = Collections.unmodifiableList(Arrays.asList());
 
 
     /**
@@ -25,7 +27,7 @@ public class MavenFetchRequest {
      * @param artifacts The artifacts requested, in form of {@literal <groupId>:<artifactId>:<version>}
      */
     public MavenFetchRequest(Collection<String> artifacts) {
-        this.artifacts = List.copyOf(artifacts);
+        this.artifacts = Collections.unmodifiableList(new ArrayList<>(artifacts));
     }
 
 
@@ -34,18 +36,18 @@ public class MavenFetchRequest {
      * @param artifacts The artifacts requested, in form of {@literal <groupId>:<artifactId>:<version>}
      */
     public MavenFetchRequest(String... artifacts) {
-        this.artifacts = List.copyOf(Arrays.asList(artifacts));
+        this.artifacts = Collections.unmodifiableList(Arrays.asList(artifacts));
     }
 
 
 
     /**
      * Set the scopes of the dependencies of the requested artifacts
-     * @param scopes One or more scopes, that would be <tt>compile</tt>,<tt>provided</tt>,<tt>test</tt>
+     * @param scopes One or more scopes, that would be compile,provided,test
      * @return The same instance
      */
     public MavenFetchRequest scopes(String... scopes) {
-        this.scopes = List.copyOf(Arrays.asList(scopes));
+        this.scopes = Collections.unmodifiableList(Arrays.asList(scopes));
         return this;
     }
 
@@ -57,7 +59,7 @@ public class MavenFetchRequest {
      * @return The same instance
      */
     public MavenFetchRequest excludingArtifacts(String... artifacts) {
-        this.excludedArtifacts = List.copyOf(Arrays.asList(artifacts));
+        this.excludedArtifacts = Collections.unmodifiableList(Arrays.asList(artifacts));
         return this;
     }
 
