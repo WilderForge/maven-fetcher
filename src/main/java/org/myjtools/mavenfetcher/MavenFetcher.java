@@ -293,6 +293,10 @@ public class MavenFetcher {
             throw new MavenFetchException(e);
         }
     }
+    
+    public Path getLocalRepository() {
+    	return localRepository.getBasedir().toPath();
+    }
 
     private RepositorySystem system() {
         if (system == null) {
